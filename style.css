@@ -1,0 +1,30 @@
+.gameboard{
+  display: grid;
+  height: 500px;
+  width: 500px;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  gap: 14px;
+  background-color: black;
+}
+.gameboard>div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  font-size: 128px;
+}
+form{
+  display: flex;
+  justify-content: space-around;
+  width: 500px;
+  margin: 32px 0;
+}
+.btns{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 500px;
+}
+.btns>*{
+  margin: 8px;
+}
