@@ -3,15 +3,28 @@ const gameBoard = (() => {
   let p1; let p2; let currPlayer;
   const cells = document.querySelectorAll('.gameboard>*');
   const players = document.querySelectorAll('.players>input');
+  const result_box = document.querySelector('.result_box');
+  const result_msg = document.querySelector('.result_box>p');
 
   const startGame = () => {
     _newBoard();
+    _drawBoard();
     _newPlayers();
+    result_box.style.display = 'none';
+    result_msg.textContent = '';
+    cells.forEach(cell => cell.addEventListener('click', (event) => {
+      const cellID = event.target.id;
+      _makeTurn(cellID, currPlayer);
+      _drawBoard();
+      _winCon();
+      _switchPlayers();
+    }));
   };
 
   const _Player = (name, mark) => {
     return {name, mark};
   };
+
   const _newPlayers = () => {
     p1 = _Player(players[0].value, 'X');
     p2 = _Player(players[1].value, 'O');
@@ -27,15 +40,15 @@ const gameBoard = (() => {
     for (let i = 0; i < 9; i++){
       board.push(null);
     };
+  };
+
+  const resetBoard = () => {
+    result_box.style.display = 'none';
+    result_msg.textContent = '';
+    p1 = ''; p2 = '';
+    players.forEach(player => player.textContent = '');
+    _newBoard();
     _drawBoard();
-    cells.forEach(cell => cell.addEventListener('click', (event) => {
-      const cellID = event.target.id;
-      if (cell.textContent === ''){
-        _fillCell(cellID, currPlayer);
-        _drawBoard();
-        _switchPlayers();
-      };
-    }));
   };
 
   const showLog = () => {
@@ -46,21 +59,32 @@ const gameBoard = (() => {
   const _drawBoard = () => {
     for (let i = 0; i < 9; i++){
       cells[i].textContent = board[i];
-    }
+    };
   };
 
-  const _fillCell = (cell, player) => {
-    board[cell] = player.mark;
+  const _makeTurn = (cell, player) => {
+    if (board[cell] === null){
+      board[cell] = player.mark;
+    };
   };
 
   const _winCon = () => {
-    /*continue here
-    012  036  048
-    345  147  246
-    678  258
-    */
+    const winTemplate = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], 
+                         [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+    for (con of winTemplate){
+      if ((board[con[0]] != null) && (board[con[1]] != null) && (board[con[2]] != null)){
+        if ((board[con[0]] === board[con[1]]) && (board[con[1]] === board[con[2]])){
+          console.log(`${currPlayer.name} won!`);
+          result_box.style.display = 'flex';
+          result_msg.textContent = `${currPlayer.name} won!`;
+        };
+      };
+    };
   };
 
-  return {startGame, showLog};
+  return {startGame, resetBoard, showLog};
 })();
 
+const btns = document.querySelectorAll('.btns button');
+btns[0].addEventListener('click', () => gameBoard.startGame());
+btns[1].addEventListener('click', () => gameBoard.resetBoard());
